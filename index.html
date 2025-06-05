@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Расписание Предметов</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            margin: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #007bff;
+            margin-bottom: 30px;
+            font-size: 2.2em;
+        }
+
+        .day-schedule {
+            margin-bottom: 25px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .day-schedule h2 {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 20px;
+            margin: 0;
+            font-size: 1.5em;
+            text-transform: capitalize; /* Делает первую букву каждого слова заглавной */
+        }
+
+        .lesson-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .lesson-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            transition: background-color 0.3s ease;
+        }
+
+        .lesson-item:last-child {
+            border-bottom: none;
+        }
+
+        .lesson-item:hover {
+            background-color: #f9f9f9;
+        }
+
+        .lesson-details {
+            flex-grow: 1;
+        }
+
+        .lesson-details strong {
+            font-size: 1.1em;
+            color: #0056b3;
+        }
+
+        .lesson-meta {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .lesson-meta span {
+            margin-right: 15px;
+        }
+
+        .no-lessons {
+            padding: 15px 20px;
+            color: #888;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Мое Расписание</h1>
+        <div id="schedule-container">
+            </div>
+    </div>
+
+    <script>
+        // Массив объектов с данными о предметах
+        const schedule = [
+            {
+                day: 'понедельник',
+                name: 'Математический анализ',
+                room: '305',
+                teacher: 'Иванов И.И.'
+            },
+            {
+                day: 'понедельник',
+                name: 'Основы программирования',
+                room: '201',
+                teacher: 'Петрова С.В.'
+            },
+            {
+                day: 'вторник',
+                name: 'Физика',
+                room: '410',
+                teacher: 'Сидоров А.Н.'
+            },
+            {
+                day: 'среда',
+                name: 'История',
+                room: '115',
+                teacher: 'Козлова Е.П.'
+            },
+            {
+                day: 'среда',
+                name: 'Базы данных',
+                room: '203',
+                teacher: 'Смирнов Д.А.'
+            },
+            {
+                day: 'четверг',
+                name: 'Английский язык',
+                room: '102',
+                teacher: 'Абрамова О.Р.'
+            },
+            {
+                day: 'пятница',
+                name: 'Дискретная математика',
+                room: '307',
+                teacher: 'Кузнецов В.Г.'
+            },
+            {
+                day: 'пятница',
+                name: 'Философия',
+                room: '120',
+                teacher: 'Григорьева И.Л.'
+            }
+            // Вы можете добавить больше предметов здесь
+        ];
+
+        // Функция для отрисовки расписания
+        function renderSchedule() {
+            const scheduleContainer = document.getElementById('schedule-container');
+            scheduleContainer.innerHTML = ''; // Очищаем контейнер перед отрисовкой
+
+            // Группируем предметы по дням недели
+            const scheduleByDay = schedule.reduce((acc, lesson) => {
+                const day = lesson.day.toLowerCase(); // Приводим день к нижнему регистру для унификации
+                if (!acc[day]) {
+                    acc[day] = [];
+                }
+                acc[day].push(lesson);
+                return acc;
+            }, {});
+
+            // Определяем порядок дней недели
+            const daysOrder = ['понедельник', 'вторник', 'среда', 'четверг', 'пятница', 'суббота', 'воскресенье'];
+
+            // Отрисовываем каждый день недели
+            daysOrder.forEach(day => {
+                const lessonsToday = scheduleByDay[day];
+
+                const dayScheduleDiv = document.createElement('div');
+                dayScheduleDiv.classList.add('day-schedule');
+
+                const dayHeading = document.createElement('h2');
+                dayHeading.textContent = day; // Название дня недели
+
+                dayScheduleDiv.appendChild(dayHeading);
+
+                if (lessonsToday && lessonsToday.length > 0) {
+                    const lessonList = document.createElement('ul');
+                    lessonList.classList.add('lesson-list');
+
+                    lessonsToday.forEach(lesson => {
+                        const lessonItem = document.createElement('li');
+                        lessonItem.classList.add('lesson-item');
+
+                        lessonItem.innerHTML = `
+                            <div class="lesson-details">
+                                <strong>${lesson.name}</strong>
+                                <div class="lesson-meta">
+                                    <span>Кабинет: ${lesson.room}</span>
+                                    <span>Преподаватель: ${lesson.teacher}</span>
+                                </div>
+                            </div>
+                        `;
+                        lessonList.appendChild(lessonItem);
+                    });
+                    dayScheduleDiv.appendChild(lessonList);
+                } else {
+                    const noLessonsDiv = document.createElement('div');
+                    noLessonsDiv.classList.add('no-lessons');
+                    noLessonsDiv.textContent = 'На этот день занятий нет.';
+                    dayScheduleDiv.appendChild(noLessonsDiv);
+                }
+
+                scheduleContainer.appendChild(dayScheduleDiv);
+            });
+        }
+
+        // Вызываем функцию отрисовки расписания при загрузке страницы
+        document.addEventListener('DOMContentLoaded', renderSchedule);
+    </script>
+</body>
+</html>
